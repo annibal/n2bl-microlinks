@@ -1,165 +1,87 @@
 import express from 'express';
-import postgres from 'pg';
-import crypto from 'crypto';
 import path from 'path';
 import cors from 'cors';
+import { baseUrl, pool } from './server-helpers/db-pool.js';
+import { inquireRedirect, logMicroAccess } from './controllers/redirect.controller.js';
+import { findMicroRegistry, handleCreateMicro } from './controllers/micro.controller.js';
 
 const __dirname = path.resolve();
 
-// Extract database connection info from env var or use defaults
-const dbUrl = process.env.DATABASE_URL || 'postgresql://linksman:WARMACHINEROX@database:5432/microlinks_db_001';
-const port = process.env.PORT || 3069;
-const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
-
-// Create Express app
 const app = express();
 
-// Database connection
-const pool = new postgres.Pool({
-  connectionString: dbUrl,
-});
-
-// Connect to database and log success/failure
-pool
-  .connect()
-  .then(() => console.log('⧃〉Connected to PostgreSQL database'))
-  .catch((err) => console.error('⧃〉Database connection error:', err));
-
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Generate a short code (micro)
-function generateMicro(length = 6) {
-  return crypto
-    .randomBytes(Math.ceil((length * 3) / 4))
-    .toString('base64')
-    .slice(0, length)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_');
-}
-
-// Validate URL
-function isValidUrl(string) {
-  try {
-    new URL(string);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-// API endpoint to create a micro link
+//
+// _____________________________________
+// Create endpoint
 app.post('/api/micro', async (req, res) => {
   const { link, label, passcode } = req.body;
-
-  if (!link || !isValidUrl(link)) {
-    return res.status(401).json({ error: 'Invalid URL' });
-  }
-
-  try {
-    // Generate unique micro code (retry up to 3 times if collision)
-    let micro;
-    let retries = 0;
-    let inserted = false;
-
-    while (!inserted && retries < 3) {
-      micro = generateMicro();
-
-      try {
-        const query = `
-          INSERT INTO micro_link_registry (link, micro, label, passcode, info) 
-          VALUES ($1, $2, $3, $4, $5) 
-          RETURNING micro
-        `;
-
-        const clientInfo = JSON.stringify({
-          ip: req.ip,
-          userAgent: req.get('User-Agent'),
-          timestamp: new Date(),
-        });
-
-        await pool.query(query, [link, micro, label || null, passcode || null, clientInfo]);
-        inserted = true;
-      } catch (err) {
-        if (err.code === '23505') {
-          // Unique violation
-          retries++;
-        } else {
-          throw err;
-        }
-      }
-    }
-
-    if (!inserted) {
-      throw new Error('Failed to generate unique micro code');
-    }
-
-    res.json({
-      micro,
-      microUrl: `${baseUrl}/${micro}`,
-    });
-  } catch (error) {
-    console.error('Error creating micro link:', error);
-    res.status(500).json({ error: 'Failed to create micro link' });
-  }
+  const clientInfo = JSON.stringify({
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+    timestamp: new Date(),
+  });
+  const response = await handleCreateMicro({ link, label, passcode, clientInfo });
+  return res.status(response.status).json(response.payload);
 });
 
+app.post('/api/micro/:link', async (req, res) => {
+  const { link } = req.params;
+  const { label, passcode } = req.query;
+  const clientInfo = JSON.stringify({
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+    timestamp: new Date(),
+  });
+  const response = await handleCreateMicro({ link, label, passcode, clientInfo });
+  return res.status(response.status).json(response.payload);
+});
+
+//
+// _____________________________________
 // Redirect endpoint
 app.get('/:micro', async (req, res) => {
-  const { micro } = req.params;
+  let { micro } = req.params;
+  micro = micro.toUpperCase();
 
   try {
-    // First, look up the original URL
-    const lookupQuery = `
-      SELECT link FROM micro_link_registry 
-      WHERE micro = $1
-    `;
-
-    const result = await pool.query(lookupQuery, [micro]);
-
-    if (result.rows.length === 0) {
+    const microlinkResult = await findMicroRegistry({ micro });
+    if (!microlinkResult || !microlinkResult.link) {
       return res.status(404).send('Micro link not found');
     }
 
-    const link = result.rows[0].link;
+    logMicroAccess(micro, req);
 
-    // Log access
-    const clientInfo = JSON.stringify({
-      ip: req.ip,
-      userAgent: req.get('User-Agent'),
-      referrer: req.get('Referrer') || null,
-    });
-
-    const logQuery = `
-      INSERT INTO micro_accesses (micro, info)
-      VALUES ($1, $2)
-    `;
-
-    // Fire and forget the log insertion (don't await)
-    pool.query(logQuery, [micro, clientInfo]).catch((err) => console.error('Error logging access:', err));
-
-    // Redirect user to the original link
-    res.redirect(link);
+    const redirectUrl = await inquireRedirect(microlinkResult.link, req);
+    res.redirect(redirectUrl);
   } catch (error) {
     console.error('Error handling redirect:', error);
     res.status(500).send('Server error');
   }
 });
 
-// Health check endpoint
+//
+// _____________________________________
+// whatever
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json({
+    status: 'ok',
+    healthy: true,
+    uptime: process.uptime(),
+    mood: ['😀', 'happy', '😄', 'angry', 'sad', 'great', '😂', 'sei la mano to bem'][(Math.random() * 7) | 0],
+  });
 });
 
-// Start the server
+// terminal feedback that its working
+const port = process.env.PORT || 3069;
 app.listen(port, () => {
-  console.log(`⧃〉Server running at ${baseUrl}`);
+  console.log(`⧃〉Server running at "${baseUrl}"`);
 });
 
-// Graceful shutdown
+// for when you press "ctrl + C" on the terminbal
 process.on('SIGINT', () => {
   pool.end().then(() => {
     console.log('⧃〉Database pool closed');
@@ -167,4 +89,4 @@ process.on('SIGINT', () => {
   });
 });
 
-export default app
+export default app;

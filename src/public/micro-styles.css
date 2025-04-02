@@ -1,18 +1,92 @@
 :root {
-  --color-text: #232433;
+  --color-text: #0a261c;
+  --color-primary: #73ebbd;
   --color-primary-lighter: #e8f5f0;
+  --color-secondary: #72caeb;
   --size-container: 768px;
   --size-font: 16px;
-  --size-border-radius: 4px;
+  --size-border-radius: 0;
+}
+
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none !important;
 }
 
 body,
 html {
   margin: 0;
   padding: 0;
-  font: 400 var(--size-font)/1.2 monospace;
-  background-color: var(--color-primary-lighter);
+  font: 400 var(--size-font) / 1.2 monospace;
   color: var(--color-text);
+  background-color: var(--color-primary-lighter);
+  background-image: linear-gradient(142deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: -webkit-fill-available;
+  display: block;
+  position: relative;
+  overflow: auto;
+}
+
+body {
+  overflow: auto scroll;
+}
+
+body::-webkit-scrollbar {
+  width: 0.5em;
+  height: 0.5em;
+  background-color: var(--color-primary-lighter);
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #10543a;
+  border: 1px solid #139c68;
+  border-radius: 1em;
+  width: 0.5em;
+  height: 0.5em;
+}
+
+body > header {
+  padding: 2rem 1rem 1rem 1rem;
+}
+
+#microlinks--title {
+  margin: 0;
+  margin-bottom: 0.1rem;
+  font: 800 54px / 1.2 monospace;
+  text-transform: uppercase;
+}
+
+.tagline {
+  font-size: 24px;
+  margin: 0;
+  line-height: 1;
+  text-wrap-style: pretty;
+}
+
+.tagline__links {
+  background: #10543a;
+  color: var(--color-primary);
+  padding: 0.1em 0.6pc;
+  margin: 0 -0.3pc;
+}
+
+.tagline__micro {
+  background: #104154;
+  color: var(--color-secondary);
+  padding: 0.1em 0.6pc;
+  margin: 0 -0.3pc;
+}
+
+.tagline__micro ~ .tagline__links {
+  margin-inline-start: 0;
+  padding-inline-start: 0.15pc;
 }
 
 .container {
@@ -20,9 +94,8 @@ html {
   margin: 0 auto;
 }
 
-
 .form-field {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -46,7 +119,6 @@ html {
   border-color: #000;
 }
 
-
 .card {
   background-color: #fff;
   border-radius: var(--size-border-radius);
@@ -57,6 +129,7 @@ html {
 .card__title {
   font-size: 1.5rem;
   font-weight: 600;
+  margin: 0;
   margin-bottom: 1rem;
 }
 
@@ -74,10 +147,14 @@ html {
   color: var(--color-text);
   background-color: var(--color-primary-lighter);
   cursor: pointer;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
 }
 
 .card__actions button:hover {
-  border-color: #000;
+  color: var(--color-primary-lighter);
+  background-color: var(--color-text);
 }
 
 .card__actions button:active {
@@ -85,3 +162,213 @@ html {
   color: #fff;
 }
 
+.card__body {
+  padding-bottom: 0.4rem;
+}
+
+.card--form .card__actions {
+  justify-content: center;
+}
+
+.card__actions button[type='submit'] {
+  font-size: 1.3rem;
+  padding: 0.6rem 2rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  letter-spacing: 1px;
+}
+
+.card--result {
+  min-height: 360px;
+  display: flex;
+  flex-flow: column;
+}
+
+.card--result .card__title {
+  margin-bottom: auto;
+}
+
+.card--result .card__actions {
+  margin-bottom: auto;
+}
+
+.fcenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#microlinks-result {
+  font-size: 2.3rem;
+  line-height: 1.4;
+  margin: 0.2rem 0 0.7rem 0;
+  min-height: 64px;
+  padding: 0 1.6pc;
+  box-shadow: 0 0 120px #11c19a;
+}
+
+details > summary {
+  margin: 0 -1rem 0rem -1rem;
+  background: rgb(0 0 0 / 16%);
+  padding: 0.2pc 0.5pc 0.2pc 0.5pc;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.7px;
+  line-height: 1.6;
+}
+
+details {
+  background-color: #c7e6f1;
+  margin-bottom: 1rem;
+  padding: 0 1rem 0rem 1rem;
+  border: 1px solid var(--color-text);
+}
+
+details[open] {
+  padding-bottom: 0.5rem;
+}
+
+details[open] > summary {
+  padding-bottom: 0.2pc;
+  margin-bottom: 1rem;
+}
+
+ul.mlhist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #1041544d;
+  padding-top: 0.5rem;
+}
+
+.mlhist__item a {
+  display: flex;
+  gap: 0.5pc;
+  text-decoration: none;
+  color: inherit;
+  font: inherit;
+  width: 100%;
+  border-bottom: 1px solid #1041544d;
+  padding: 0 0.3rem 0.5rem 0.3rem;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.mlhist__item__micro {
+  font-weight: bold;
+  display: inline-block;
+}
+
+span.mlhist__item__link {
+  display: inline-block;
+  font-size: 70%;
+  opacity: 0.8;
+  word-wrap: break-word;
+  overflow: hidden;
+  word-break: break-all;
+  line-height: 1.1;
+  padding-top: 5px;
+}
+
+.mlhist__item__micro::after {
+  content: '⇨';
+  margin-inline-start: 0.5pc;
+  color: #18875c;
+}
+
+.mlhist__item a:hover {
+  text-decoration: underline;
+}
+
+#formCardReopener {
+  margin: 4em 0 5em 0;
+}
+
+button#makeAnotherMicrolink {
+  border: 1px solid #104154;
+  color: #196a89;
+  background-color: #d8e9cf;
+  box-shadow: 0 0 25px 4px #FFFFFF, 0 0 100px 4px #d8e9cf;
+}
+button#makeAnotherMicrolink:hover {
+  background-color: #196a89;
+  color: #d8e9cf;
+}
+
+@media (max-width: 768px) {
+  body > header {
+    padding: 0;
+  }
+  #microlinks--title {
+    font-size: 15vw;
+    line-height: 1;
+    text-align: center;
+    margin: 0;
+    padding: 0.5rem 0 0.25rem 0;
+    border-bottom: 2px solid var(--color-text);
+    opacity: 0.8;
+  }
+
+  .tagline {
+    line-height: 1.4;
+    font-size: 20px;
+    padding: 1rem 2rem 1.5rem 2rem;
+    text-align: center;
+  }
+
+  .tagline__links,
+  .tagline__micro {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .card {
+    margin: 0 0 1.7rem 0;
+    padding: 1.5rem 0.5rem;
+    background-color: #ffffffaa;
+  }
+
+  .card__actions {
+    text-align: center;
+    justify-content: center;
+  }
+
+  #microlinks-result {
+    font-size: calc(100vw / 20);
+  }
+
+  .mlhist__item a {
+    flex-wrap: wrap;
+    gap: 0;
+    font-size: 110%;
+  }
+
+  span.mlhist__item__link {
+    padding: 0;
+    max-height: 3.3em;
+    text-overflow: ellipsis;
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+    box-orient: vertical;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    width: 100%;
+  }
+
+  .mlhist__item__micro::after {
+    content: '⤵';
+    content: '⮷';
+    content: '↴';
+    margin-inline-start: 0.2pc;
+    font-weight: bold;
+    font-size: 110%;
+    line-height: 0.9;
+  }
+  
+  #formCardReopener {
+    margin: 2em 0 4em 0;
+  }
+}

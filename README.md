@@ -2,14 +2,23 @@
 
 Turns your **links** into **microlinks** !
 
-**TODO**:
+**Roadmap**:
 - [ ] Purchase a hosting plan
   - [ ] Deploy production app
     - [ ] Add the production preview app link here
 - [x] Setup structure, dockers, bundlers etc
-  - [ ] Ensure the functionality of the whole "microlinks" application
-    - [ ] Do an pretty interface to drive the microlinks engine
-  
+  - [x] Document what is what, why it's made like this, how to find stuff etc.
+    - [ ] Wrap all functions with JSDoc
+    - [ ] Properly split routes, db schemas, controllers, utilities etc
+  - [x] Ensure the functionality of the whole "microlinks" application
+    - [ ] Add unit tests
+  - [x] Do an pretty interface to drive the microlinks engine
+    - [ ] Make it even prettier
+    - [ ] Use anything other than vanilla JS in the frontend
+  - [x] Create microlinks
+  - [x] Redirect from micro to link
+    - [x] Only if is a phone, otherwise redirect to google.com
+    - [ ] Get datasets from security companies to better identify if is mobile
 
 ## Prerequisites
 - [Docker](https://docs.docker.com/compose/install/) & [Docker Compose](https://docs.docker.com/compose/install/);
