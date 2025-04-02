@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ext": "js,json,env",
+  "ignore": ["src/test"],
+  "exec": "babel-node src/server.js"
+}

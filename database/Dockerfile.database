@@ -1,0 +1,12 @@
+FROM postgres:15-alpine
+
+# Copy initialization scripts
+COPY ./database/init.sql /docker-entrypoint-initdb.d/
+
+# Optional: Set environment variables for database initialization
+ENV POSTGRES_DB=microlinks_db_001
+ENV POSTGRES_USER=linksman
+ENV POSTGRES_PASSWORD=WARMACHINEROX
+
+# Expose the standard PostgreSQL port
+EXPOSE 5432

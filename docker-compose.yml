@@ -1,0 +1,38 @@
+services:
+  database:
+    build:
+      context: .
+      dockerfile: database/Dockerfile.database
+    environment:
+      POSTGRES_DB: microlinks_db_001
+      POSTGRES_USER: linksman
+      POSTGRES_PASSWORD: WARMACHINEROX
+    ports:
+      - "45999:5432"
+    volumes:
+      - database-data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U linksman -d microlinks_db_001"]
+      interval: 1s
+      timeout: 2s
+      retries: 3
+
+  server:
+    build:
+      context: ./src
+      dockerfile: Dockerfile.server
+    environment:
+      - DATABASE_URL=postgresql://linksman:WARMACHINEROX@database:5432/microlinks_db_001
+      - PORT=3069
+    ports:
+      - "3069:3069"
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./src:/app
+      - /app/node_modules
+
+volumes:
+  database-data:

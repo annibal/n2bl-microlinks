@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MicroLinks!</title>
+    <link rel="stylesheet" href="/micro-styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1 id="microlinks--title">MicroLinks</h1>
+      <p class="tagline">
+        Turn your <b class="tagline__links">LINKS</b> into <b class="tagline__micro">MICRO</b><b class="tagline__links">LINKS</b>!!
+      </p>
+    </header>
+
+    <main class="container">
+      <article class="card card--form">
+        <form id="microlinks-form">
+          <div class="form-field">
+            <label for="mlf-url">Link URL:</label>
+            <input id="mlf-url" type="url" required placeholder="http://www.YOUR-LINK-HERE.com" />
+            <span id="mlf-url__error"></span>
+          </div>
+
+          <details>
+            <summary>Advanced Options</summary>
+
+            <div id="advanced-options">
+              <div class="form-field">
+                <label for="mlf-micro">Custom MICRO:</label>
+                <input id="mlf-micro" type="text" placeholder="MY-CRO" />
+                <span id="mlf-micro__error"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="mlf-label">Give a name for your MICROLINK:</label>
+                <input id="mlf-label" type="text" placeholder="Robson" />
+                <span id="mlf-label__error"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="mlf-passcode">Deletion Passcode (microlinks without passcode cannot be deleted):</label>
+                <input id="mlf-passcode" type="text" placeholder="It's a feature for the future" maxlength="255" />
+                <span id="mlf-passcode__error"></span>
+              </div>
+            </div>
+          </details>
+
+          <button type="submit">Make it MICRO!</button>
+        </form>
+      </article>
+
+      <article class="card card--result">
+        <h2 class="card__title">Your microlink is:</h2>
+        <p id="microlinks-result">______</p>
+        <p id="microlinks-error"></p>
+        <div class="card__actions">
+          <button id="microlinks-copy">Copy</button>
+          <button id="microlinks-share">Share</button>
+          <button id="microlinks-what">Appreciate</button>
+        </div>
+      </article>
+    </main>
+
+    <script src="/micro-scripts.js"></script>
+  </body>
+</html>

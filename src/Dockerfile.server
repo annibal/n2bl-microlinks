@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# node-gyp
+# RUN apk add --no-cache python3 make g++
+
+# COPY package*.json ./
+COPY package.json package-lock.json* ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3069
+
+ENV NODE_ENV=development
+
+CMD ["npm", "run", "dev"]
